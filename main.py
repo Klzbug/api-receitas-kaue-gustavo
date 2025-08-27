@@ -31,4 +31,18 @@ receitas = [
     "utensílios": ["tigela", "rolo de macarrão", "faca ou cortador", "garfo", "panela funda", "escumadeira"],
     "modo de preparo": ["Misture a farinha, o sal e o óleo, adicionando a água aos poucos até obter uma massa homogênea.", "Deixe a massa descansar por 20 minutos.", "Abra a massa fina com um rolo em superfície enfarinhada.", "Corte em retângulos, recheie, dobre e feche com um garfo.", "Frite em óleo quente até dourar.", "Escorra em papel-toalha e sirva quente."]
     },
+    receita_croissant = {
+    "nome": "Croissant Tradicional",
+    "ingrediente": ["500g de farinha de trigo", "10g de sal", "50g de açúcar", "10g de fermento biológico seco", "300ml de leite morno", "300g de manteiga sem sal gelada", "1 ovo para pincelar"],
+    "utensílios": ["tigela grande", "rolo de massa", "plástico filme", "pincel culinário", "assadeira", "forno"],
+    "modo de preparo": [
+        "Misture farinha, sal, açúcar e fermento em uma tigela.",
+        "Adicione o leite morno aos poucos até obter uma massa homogênea.",
+        "Sove a massa, cubra com plástico filme e deixe descansar por 1 hora.",
+        "Abra a massa em formato retangular e coloque a manteiga gelada no centro.",
+        "Dobre a massa em camadas, leve à geladeira por 30 minutos e repita o processo de dobrar e gelar 3 vezes.",
+        "Abra a massa, corte em triângulos e enrole formando croissants.",
+        "Coloque os croissants em uma assadeira, deixe crescer por 1 hora.",
+        "Pincele com ovo batido e asse em forno preaquecido a 200°C por cerca de 20 minutos ou até dourar."]
+};
 ]
