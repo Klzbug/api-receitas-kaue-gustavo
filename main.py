@@ -1,5 +1,25 @@
+from fastapi import FastAPI
+
 receitas = [
     {
+        'nome': 'brownie',
+        'igredientes' : ['3 ovos', '6 colheres de açúcar','...'],
+        'utensílios' : ['tijela', 'forma'],
+        'modo de preparo' : '...'
+    },
+    {
+        'nome': 'torta',
+        'igredientes' : ['3 ovos', '6 colheres de açúcar','...'],
+        'utensílios' : ['tijela', 'forma'],
+        'modo de preparo' : '...'
+    },
+    {
+        'nome': 'Salada de fruta',
+        'igredientes' : ['maça', 'banana','uva','...'],
+        'utensílios' : ['tijela'],
+        'modo de preparo' : 'fatiar bem todas as frutas e misturalas'
+    },
+     {
         'nome': 'cuzcuz',
         'ingrediente' : ['2 xícaras de flocão de milho', '1 xícara de água', '1/2 colher de chá de sal', '1 colher de sopa de manteiga (opcional)'],
         'utensílios' : ['Tigela', 'Colher', 'Cuzcuzeira', 'Panela'],
@@ -8,7 +28,4 @@ receitas = [
     {
         
     },
-    {
-
-    }
 ]
