@@ -53,6 +53,28 @@ receitas = [
             'Panela'
         ],
         'modo_de_preparo': 'Em uma tigela, misture o flocão de milho com o sal; acrescente a água aos poucos, mexendo até que toda a farinha esteja úmida. Deixe descansar por 10 minutos para hidratar bem; coloque a massa hidratada na cuscuzeira sem apertar muito; leve ao fogo médio por cerca de 10 minutos ou até sentir o cheiro de milho cozido; desenforme com cuidado, coloque manteiga por cima e sirva quente.'
+    },
+    {
+         'nome': 'Feijoada',
+        'ingredientes': [
+            '500g de feijão preto',
+            '300g de carne-seca',
+            '200g de costelinha de porco',
+            '200g de linguiça calabresa',
+            '150g de paio',
+            '1 cebola picada',
+            '3 dentes de alho amassados',
+            '2 folhas de louro',
+            'Sal e pimenta a gosto',
+            'Cheiro-verde a gosto'
+        ],
+        'utensílios': [
+            'Panela de pressão',
+            'Faca',
+            'Tábua de corte',
+            'Colher de pau'
+        ],
+        'modo_de_preparo': 'Deixe a carne-seca de molho de um dia para o outro, trocando a água algumas vezes. Cozinhe o feijão preto em uma panela de pressão com as folhas de louro. Em outra panela, refogue as carnes com a cebola e o alho até dourar. Junte tudo ao feijão cozido e deixe apurar em fogo baixo até o caldo engrossar. Finalize com cheiro-verde e sirva acompanhado de arroz branco, couve refogada e farofa.'
     }
 ]
 
