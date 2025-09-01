@@ -80,19 +80,6 @@ receitas = [
         'modo de preparo' : ['Fatiar bem todas as frutas e misturá-las.']
     },
     {
-        'nome': 'cuscuz',
-        'ingredientes' : ['2 xícaras de flocão de milho', '1 xícara de água', '1/2 colher de chá de sal', '1 colher de sopa de manteiga (opcional)'],
-        'utensílios' : ['tigela', 'colher', 'cuscuzera', 'panela'],
-        'modo de preparo' : [
-            'Em uma tigela, misture o flocão de milho com o sal.',
-            'Acrescente a água aos poucos, mexendo até que toda a farinha esteja úmida.',
-            'Deixe descansar por 10 minutos para hidratar bem.',
-            'Coloque a massa hidratada na cuscuzera sem apertar muito.',
-            'Leve ao fogo médio por cerca de 10 minutos ou até sentir o cheiro de milho cozido.',
-            'Desenforme com cuidado, coloque manteiga por cima e sirva quente.'
-        ]
-    },
-    {
         'nome': 'Pastel',
         'ingredientes': ['2 xícaras de farinha de trigo', '1 colher de sopa de óleo', '1 pitada de sal', '1/2 xícara de água morna', 'óleo para fritar', 'recheio a gosto (carne, queijo, frango, etc.)'],
         'utensílios': ['tigela', 'rolo de macarrão', 'faca ou cortador', 'garfo', 'panela funda', 'escumadeira'],
