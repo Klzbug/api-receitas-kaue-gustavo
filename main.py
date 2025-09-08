@@ -1,7 +1,9 @@
+
 from pydantic import BaseModel
 from typing import List
 
-class Receitas(BaseModel):
+
+class Receita(BaseModel):
     nome: str
     ingredientes: List[str]
     modo_de_preparo: str
