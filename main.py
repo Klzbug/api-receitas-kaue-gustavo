@@ -1,7 +1,9 @@
 
+from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
 
+app = FastAPI(title='API do Kaué e do Gustavo')
 
 class Receita(BaseModel):
     nome: str
