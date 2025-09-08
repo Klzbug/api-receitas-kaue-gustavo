@@ -1,7 +1,10 @@
 from pydantic import BaseModel
 from typing import List
 
-
+class Receitas(BaseModel):
+    nome: str
+    ingredientes: List[str]
+    modo_de_preparo: str
 
 '''
 receitas = [
@@ -25,16 +28,17 @@ receitas = [
 ]
 '''
 
+receitas: List[Receita] = []
 
 @app.get("/receitas")
-def listar_receitas():
+def get_todas_receitas():
     return receitas
 
 
-@app.get("/receitas/{nome}")
-def buscar_receita(nome: str):
+@app.get("/receitas/{nome_receita}")
+def get_receitas_por_nome(nome_receita: str):
     for receita in receitas:
-        if receita.nome == nome.lower():
+        if receita.nome == nome_receita():
             return receita
     return {"erro": "Receita não encontrada"}
 
