@@ -64,12 +64,17 @@ def get_receitas_por_nome(nome_receita: str):
 def create_receita(dados: CreateReceita):
     global contador_id
 
+    for receita in receitas:
+        if receita.nome.lower() == dados.nome.lower():
+            return {"erro": "receita duplicada"}
+
     nova_receita = Receita(
         id=contador_id,
         nome=dados.nome,
         ingredientes=dados.ingredientes,
         modo_de_preparo=dados.modo_de_preparo
     )
+
 
     receitas.append(nova_receita)
     contador_id += 1
