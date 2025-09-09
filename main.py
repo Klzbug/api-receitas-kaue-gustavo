@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 
 app = FastAPI(title='API do Kaué e do Gustavo')
 
@@ -14,8 +14,39 @@ class Receita(CreateReceita):
     id: int
 
 
+# Lista de receitas e contador de ID
 receitas: List[Receita] = []
 contador_id = 1
+
+# Adicionando receitas iniciais
+receitas.append(Receita(
+    id=1,
+    nome="Brownie",
+    ingredientes=[
+        "1 xícara de manteiga derretida",
+        "2 xícaras de açúcar",
+        "1 xícara de cacau em pó",
+        "4 ovos",
+        "1 xícara de farinha de trigo",
+        "1 pitada de sal"
+    ],
+    modo_de_preparo="Misture todos os ingredientes, coloque em uma forma untada e asse por 25 minutos a 180°C."
+))
+
+receitas.append(Receita(
+    id=2,
+    nome="Bolo",
+    ingredientes=[
+        "3 ovos",
+        "2 xícaras de açúcar",
+        "3 xícaras de farinha de trigo",
+        "1 xícara de leite",
+        "1 colher de sopa de fermento em pó"
+    ],
+    modo_de_preparo="Bata os ovos com o açúcar, adicione a farinha, o leite e por fim o fermento. Asse em forno médio por 35 minutos."
+))
+
+contador_id = 3  # Atualiza o próximo ID
 
 
 @app.get("/receitas")
