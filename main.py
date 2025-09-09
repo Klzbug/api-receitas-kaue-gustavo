@@ -14,11 +14,9 @@ class Receita(CreateReceita):
     id: int
 
 
-# Lista de receitas e contador de ID
 receitas: List[Receita] = []
 contador_id = 1
 
-# Adicionando receitas iniciais
 receitas.append(Receita(
     id=1,
     nome="Brownie",
@@ -46,7 +44,7 @@ receitas.append(Receita(
     modo_de_preparo="Bata os ovos com o açúcar, adicione a farinha, o leite e por fim o fermento. Asse em forno médio por 35 minutos."
 ))
 
-contador_id = 3  # Atualiza o próximo ID
+contador_id = 3  
 
 
 @app.get("/receitas")
