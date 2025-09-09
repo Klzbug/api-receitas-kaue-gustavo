@@ -68,3 +68,11 @@ def update_receita(id: int, dados: CreateReceita):
 
         receitas[i] = (receita_atualizada)
         return receita_atualizada
+
+
+def buscar_receita(id_receita):
+    for i in range(len(receitas)):
+        if receitas[i]["id"] == id_receita:
+            return receitas[i]
+    
+    return {"mensagem": "Receita não encontrada"}
