@@ -103,3 +103,12 @@ def buscar_receita(id_receita: int) -> dict:
         if receita.id == id_receita:
             return receita
     return {"mensagem": "Receita não encontrada"}
+
+@app.delete("/receitas/{id}")
+def deletar_receita(id: int):
+    for i in range(len(receitas)):
+        if receitas[i].id == id:
+            receitas.pop(i)
+            return {"mensagem": "Receita deletada"}
+    
+    return {"mensagem": "Receita não encontrada"}
