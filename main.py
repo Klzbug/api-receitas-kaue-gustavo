@@ -1,10 +1,3 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List
-
-app = FastAPI(title='API do Kaué e do Gustavo')
-
-
 class CreateReceita(BaseModel):
     nome: str
     ingredientes: List[str]
@@ -44,29 +37,21 @@ receitas.append(Receita(
     modo_de_preparo="Bata os ovos com o açúcar, adicione a farinha, o leite e por fim o fermento. Asse em forno médio por 35 minutos."
 ))
 
-contador_id = 3  
-
-
-@app.get("/receitas")
-def get_todas_receitas():
-    return receitas
-
-
-@app.get("/receitas/{nome_receita}")
-def get_receitas_por_nome(nome_receita: str):
-    for receita in receitas:
-        if receita.nome.lower() == nome_receita.lower():
-            return receita
-    return {"erro": "Receita não encontrada"}
+contador_id = 3
 
 
 @app.post("/receitas")
 def create_receita(dados: CreateReceita):
     global contador_id
 
-    for receita in receitas:
-        if receita.nome.lower() == dados.nome.lower():
-            return {"erro": "receita duplicada"}
+    if not (2 <= len(dados.nome) <= 50):
+        return {"erro": "O nome da receita deve ter entre 2 e 50 caracteres."}
+    if not (1 <= len(dados.ingredientes) <= 20):
+        return {"erro": "A receita deve ter no mínimo 1 e no máximo 20 ingredientes."}
+
+    for receita_existente in receitas:
+        if receita_existente.nome.lower() == dados.nome.lower():
+            return {"erro": "Já existe uma receita com este nome."}
 
     nova_receita = Receita(
         id=contador_id,
@@ -75,15 +60,42 @@ def create_receita(dados: CreateReceita):
         modo_de_preparo=dados.modo_de_preparo
     )
 
-
     receitas.append(nova_receita)
     contador_id += 1
 
     return nova_receita
 
+@app.get("/receitas")
+def get_todas_receitas():
+    return receitas
+
+@app.get("/receitas/id/{id}")
+def get_receita_por_id(id: int):
+    for receita in receitas:
+        if receita.id == id:
+            return receita
+    return {"erro": "Receita com o ID especificado não foi encontrada"}
+
+@app.get("/receitas/{nome_receita}")
+def get_receitas_por_nome(nome_receita: str):
+    for receita in receitas:
+        if receita.nome.lower() == nome_receita.lower():
+            return receita
+    return {"erro": "Receita não encontrada"}
 
 @app.put("/receitas/{id}")
 def update_receita(id: int, dados: CreateReceita):
+    if not dados.nome or not dados.nome.strip():
+        return {"erro": "O nome da receita не pode ser vazio."}
+    if not (2 <= len(dados.nome) <= 50):
+        return {"erro": "O nome da receita deve ter entre 2 e 50 caracteres."}
+    if not (1 <= len(dados.ingredientes) <= 20):
+        return {"erro": "A receita deve ter no mínimo 1 e no máximo 20 ingredientes."}
+
+    for r in receitas:
+        if r.nome.lower() == dados.nome.lower() and r.id != id:
+            return {"erro": "Já existe outra receita com este nome."}
+
     for i in range(len(receitas)):
         if receitas[i].id == id:
             receita_atualizada = Receita(
@@ -97,18 +109,14 @@ def update_receita(id: int, dados: CreateReceita):
 
     return {"erro": "Receita não encontrada"}
 
-
-def buscar_receita(id_receita: int) -> dict:
-    for receita in receitas:
-        if receita.id == id_receita:
-            return receita
-    return {"mensagem": "Receita não encontrada"}
-
 @app.delete("/receitas/{id}")
 def deletar_receita(id: int):
+    if not receitas:
+        return {"mensagem": "Não há receitas para deletar."}
+
     for i in range(len(receitas)):
         if receitas[i].id == id:
-            receitas.pop(i)
-            return {"mensagem": "Receita deletada"}
+            receita_removida = receitas.pop(i)
+            return receita_removida
     
     return {"mensagem": "Receita não encontrada"}
