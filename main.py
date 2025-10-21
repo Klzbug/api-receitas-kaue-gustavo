@@ -48,7 +48,7 @@ def create_receita(dados: CreateReceita):
 
     for receita_existente in receitas:
         if receita_existente.nome.lower() == dados.nome.lower():
-            raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Já existe uma receita com este nome.")
+            raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Já existe uma receita com o mesmo nome.")
 
     nova_receita = Receita(
         id=contador_id,
@@ -71,7 +71,7 @@ def get_receita_por_id(id: int):
     for receita in receitas:
         if receita.id == id:
             return receita
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita com o ID especificado não foi encontrada")
+    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita com esse ID, not existe")
 
 @app.get("/receitas/{nome_receita}", response_model=Receita, status_code=HTTPStatus.OK)
 def get_receitas_por_nome(nome_receita: str):
@@ -83,11 +83,8 @@ def get_receitas_por_nome(nome_receita: str):
 @app.put("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def update_receita(id: int, dados: CreateReceita):
     if not dados.nome or not dados.nome.strip():
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="O nome da receita não pode ser vazio.")
-    if not (2 <= len(dados.nome) <= 50):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="O nome da receita deve ter entre 2 e 50 caracteres.")
-    if not (1 <= len(dados.ingredientes) <= 20):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="A receita deve ter no mínimo 1 e no máximo 20 ingredientes.")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Burrro, a receita n pode ser vazia.")
+   
 
     for r in receitas:
         if r.nome.lower() == dados.nome.lower() and r.id != id:
