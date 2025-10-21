@@ -84,7 +84,10 @@ def get_receitas_por_nome(nome_receita: str):
 def update_receita(id: int, dados: CreateReceita):
     if not dados.nome or not dados.nome.strip():
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Burrro, a receita n pode ser vazia.")
-   
+    if not (2 <= len(dados.nome) <= 50):
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="O nome da receita deve ter entre 2 e 50 caracteres.")
+    if not (1 <= len(dados.ingredientes) <= 20):
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="A receita deve ter no mínimo 1 e no máximo 20 ingredientes.")
 
     for r in receitas:
         if r.nome.lower() == dados.nome.lower() and r.id != id:
