@@ -42,7 +42,6 @@ contador_id = 3
 def create_receita(dados: CreateReceita):
     global contador_id
 
-    # Validação das regras de negócio
     validar_regras_negocio_receita(dados, receitas)
 
     nova_receita = Receita(
@@ -71,10 +70,9 @@ def get_receitas_por_nome(nome_receita: str):
 
 @app.put("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def update_receita(id: int, dados: CreateReceita):
-    # Validação das regras de negócio, passando o ID atual para ignorar a receita sendo atualizada
     validar_regras_negocio_receita(dados, receitas, id_atual=id)
 
-    # Garante que a receita existe, senão levanta 404
+  
     receita_existente = buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
@@ -88,12 +86,12 @@ def update_receita(id: int, dados: CreateReceita):
             receitas[i] = receita_atualizada
             return receita_atualizada
 
-    # Este código é teoricamente inalcançável devido ao buscar_receita_por_id, mas mantido como fallback
+
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada")
 
 @app.delete("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def deletar_receita(id: int):
-    # Garante que a receita existe, senão levanta 404
+
     receita_a_deletar = buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
@@ -101,6 +99,6 @@ def deletar_receita(id: int):
             receita_removida = receitas.pop(i)
             return receita_removida
     
-    # Este código é teoricamente inalcançável devido ao buscar_receita_por_id, mas mantido como fallback
+
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada")
 
