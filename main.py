@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from http import HTTPStatus
 from typing import List
 from schema import Receita, CreateReceita
-from services import validar_regras_negocio_receita, buscar_receita_por_id, buscar_receita_por_nome
+from .services import validar_regras_negocio_receita, buscar_receita_por_id, buscar_receita_por_nome
 
 app = FastAPI(title='API do Kaué e do Gustavo')
 
@@ -74,8 +74,8 @@ def update_receita(id: int, dados: CreateReceita):
     # Validação das regras de negócio, passando o ID atual para ignorar a receita sendo atualizada
     validar_regras_negocio_receita(dados, receitas, id_atual=id)
 
-    # Verifica se a receita existe
-    receita_existente = buscar_receita_por_id(id, receitas)
+    # Garante que a receita existe, senão levanta 404
+    receita_existente = buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
         if receitas[i].id == id:
@@ -93,8 +93,8 @@ def update_receita(id: int, dados: CreateReceita):
 
 @app.delete("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def deletar_receita(id: int):
-    # Verifica se a receita existe
-    receita_a_deletar = buscar_receita_por_id(id, receitas)
+    # Garante que a receita existe, senão levanta 404
+    receita_a_deletar = buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
         if receitas[i].id == id:
@@ -103,3 +103,4 @@ def deletar_receita(id: int):
     
     # Este código é teoricamente inalcançável devido ao buscar_receita_por_id, mas mantido como fallback
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada")
+
