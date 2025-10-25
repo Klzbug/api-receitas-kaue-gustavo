@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from http import HTTPStatus
 from typing import List
 from schema import Receita, CreateReceita
+from services import validar_regras_negocio_receita, buscar_receita_por_id, buscar_receita_por_nome
 
 app = FastAPI(title='API do Kaué e do Gustavo')
 
@@ -41,14 +42,8 @@ contador_id = 3
 def create_receita(dados: CreateReceita):
     global contador_id
 
-    if not (2 <= len(dados.nome) <= 50):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="O nome da receita deve ter entre 2 e 50 caracteres.")
-    if not (1 <= len(dados.ingredientes) <= 20):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="A receita deve ter no mínimo 1 e no máximo 20 ingredientes.")
-
-    for receita_existente in receitas:
-        if receita_existente.nome.lower() == dados.nome.lower():
-            raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Já existe uma receita com este nome.")
+    # Validação das regras de negócio
+    validar_regras_negocio_receita(dados, receitas)
 
     nova_receita = Receita(
         id=contador_id,
@@ -68,30 +63,19 @@ def get_todas_receitas():
 
 @app.get("/receitas/id/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def get_receita_por_id(id: int):
-    for receita in receitas:
-        if receita.id == id:
-            return receita
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita com o ID especificado não foi encontrada")
+    return buscar_receita_por_id(id, receitas)
 
 @app.get("/receitas/{nome_receita}", response_model=Receita, status_code=HTTPStatus.OK)
 def get_receitas_por_nome(nome_receita: str):
-    for receita in receitas:
-        if receita.nome.lower() == nome_receita.lower():
-            return receita
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada")
+    return buscar_receita_por_nome(nome_receita, receitas)
 
 @app.put("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def update_receita(id: int, dados: CreateReceita):
-    if not dados.nome or not dados.nome.strip():
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="O nome da receita não pode ser vazio.")
-    if not (2 <= len(dados.nome) <= 50):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="O nome da receita deve ter entre 2 e 50 caracteres.")
-    if not (1 <= len(dados.ingredientes) <= 20):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="A receita deve ter no mínimo 1 e no máximo 20 ingredientes.")
+    # Validação das regras de negócio, passando o ID atual para ignorar a receita sendo atualizada
+    validar_regras_negocio_receita(dados, receitas, id_atual=id)
 
-    for r in receitas:
-        if r.nome.lower() == dados.nome.lower() and r.id != id:
-            raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Já existe outra receita com este nome.")
+    # Verifica se a receita existe
+    receita_existente = buscar_receita_por_id(id, receitas)
 
     for i in range(len(receitas)):
         if receitas[i].id == id:
@@ -104,17 +88,18 @@ def update_receita(id: int, dados: CreateReceita):
             receitas[i] = receita_atualizada
             return receita_atualizada
 
+    # Este código é teoricamente inalcançável devido ao buscar_receita_por_id, mas mantido como fallback
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada")
 
 @app.delete("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def deletar_receita(id: int):
-    if not receitas:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Não há receitas para deletar.")
+    # Verifica se a receita existe
+    receita_a_deletar = buscar_receita_por_id(id, receitas)
 
     for i in range(len(receitas)):
         if receitas[i].id == id:
             receita_removida = receitas.pop(i)
             return receita_removida
     
+    # Este código é teoricamente inalcançável devido ao buscar_receita_por_id, mas mantido como fallback
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada")
-
