@@ -134,7 +134,7 @@ def update_receita(id: int, dados: CreateReceita):
     validar_regras_negocio_receita(dados, receitas, id_atual=id)
 
     # Garante que a receita existe, senão levanta 404
-    # Usamos a busca para garantir o 404, mas não usamos o retorno
+    # Usamos a busca para garantir o 404
     buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
@@ -154,8 +154,8 @@ def update_receita(id: int, dados: CreateReceita):
 @app.delete("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def deletar_receita(id: int):
     # Garante que a receita existe, senão levanta 404
-    # Usamos a busca para garantir o 404, mas não usamos o retorno
-    receita_a_deletar = buscar_receita_por_id(id, receitas) 
+    # Usamos a busca para garantir o 404
+    buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
         if receitas[i].id == id:
