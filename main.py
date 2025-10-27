@@ -3,13 +3,11 @@ from http import HTTPStatus
 from typing import List
 from schema import Receita, CreateReceita, Usuario
 
-# --- Funções de Serviço (Migradas de services.py) ---
 
 def validar_regras_negocio_receita(dados: CreateReceita, receitas: List[Receita], id_atual: int = None):
     """
     Valida as regras de negócio para uma receita (criação ou atualização).
     """
-    # Validação de comprimento do nome
     if not (2 <= len(dados.nome) <= 50):
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -23,9 +21,7 @@ def validar_regras_negocio_receita(dados: CreateReceita, receitas: List[Receita]
             detail="A receita deve ter no mínimo 1 e no máximo 20 ingredientes."
         )
 
-    # Validação de nome duplicado (conflito)
     for receita_existente in receitas:
-        # Verifica se é uma receita diferente (para PUT) ou se é uma nova receita (para POST)
         if receita_existente.nome.lower() == dados.nome.lower() and receita_existente.id != id_atual:
             raise HTTPException(
                 status_code=HTTPStatus.CONFLICT,
@@ -56,7 +52,6 @@ def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Recei
         detail="Receita não encontrada"
     )
 
-# --- Configuração da Aplicação ---
 
 app = FastAPI(title='API do Kaué e do Gustavo')
 
@@ -93,13 +88,11 @@ receitas.append(Receita(
 
 contador_id = 3
 
-# --- Rotas da API ---
 
 @app.post("/receitas", response_model=Receita, status_code=HTTPStatus.CREATED)
 def create_receita(dados: CreateReceita):
     global contador_id
 
-    # Validação das regras de negócio
     validar_regras_negocio_receita(dados, receitas)
 
     nova_receita = Receita(
@@ -120,21 +113,17 @@ def get_todas_receitas():
 
 @app.get("/receitas/id/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def get_receita_por_id(id: int):
-    # A função buscar_receita_por_id já levanta HTTPException(404) se não encontrar
     return buscar_receita_por_id(id, receitas)
 
 @app.get("/receitas/{nome_receita}", response_model=Receita, status_code=HTTPStatus.OK)
 def get_receitas_por_nome(nome_receita: str):
-    # A função buscar_receita_por_nome já levanta HTTPException(404) se não encontrar
     return buscar_receita_por_nome(nome_receita, receitas)
 
 @app.put("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def update_receita(id: int, dados: CreateReceita):
-    # Validação das regras de negócio, passando o ID atual para ignorar a receita sendo atualizada
     validar_regras_negocio_receita(dados, receitas, id_atual=id)
 
-    # Garante que a receita existe, senão levanta 404
-    # Usamos a busca para garantir o 404
+  
     buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
@@ -148,13 +137,11 @@ def update_receita(id: int, dados: CreateReceita):
             receitas[i] = receita_atualizada
             return receita_atualizada
     
-    # Este código é teoricamente inalcançável, mas mantido para segurança
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada (Erro interno inesperado)")
 
 @app.delete("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def deletar_receita(id: int):
-    # Garante que a receita existe, senão levanta 404
-    # Usamos a busca para garantir o 404
+
     buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
@@ -162,5 +149,4 @@ def deletar_receita(id: int):
             receita_removida = receitas.pop(i)
             return receita_removida
     
-    # Este código é teoricamente inalcançável, mas mantido para segurança
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada (Erro interno inesperado)")
