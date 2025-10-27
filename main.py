@@ -5,16 +5,12 @@ from schema import Receita, CreateReceita, Usuario
 
 
 def validar_regras_negocio_receita(dados: CreateReceita, receitas: List[Receita], id_atual: int = None):
-    """
-    Valida as regras de negócio para uma receita (criação ou atualização).
-    """
     if not (2 <= len(dados.nome) <= 50):
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail="O nome da receita deve ter entre 2 e 50 caracteres."
         )
 
-    # Validação de quantidade de ingredientes
     if not (1 <= len(dados.ingredientes) <= 20):
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -29,9 +25,6 @@ def validar_regras_negocio_receita(dados: CreateReceita, receitas: List[Receita]
             )
 
 def buscar_receita_por_id(id: int, receitas: List[Receita]) -> Receita:
-    """
-    Busca uma receita pelo ID e levanta 404 se não for encontrada.
-    """
     for receita in receitas:
         if receita.id == id:
             return receita
@@ -41,9 +34,6 @@ def buscar_receita_por_id(id: int, receitas: List[Receita]) -> Receita:
     )
 
 def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Receita:
-    """
-    Busca uma receita pelo nome e levanta 404 se não for encontrada.
-    """
     for receita in receitas:
         if receita.nome.lower() == nome_receita.lower():
             return receita
@@ -58,7 +48,6 @@ app = FastAPI(title='API do Kaué e do Gustavo')
 receitas: List[Receita] = []
 contador_id = 1
 
-# Dados de exemplo
 receitas.append(Receita(
     id=1,
     nome="Brownie",
@@ -70,7 +59,7 @@ receitas.append(Receita(
         "1 xícara de farinha de trigo",
         "1 pitada de sal"
     ],
-    modo_de_preparo="Misture todos os ingredientes, coloque em uma forma untada e asse por 25 minutos a 180°C."
+    modo_de_preparo="Misture todos os ingredientes e coloqeu no forno."
 ))
 
 receitas.append(Receita(
