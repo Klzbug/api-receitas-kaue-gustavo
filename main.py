@@ -1,14 +1,69 @@
 from fastapi import FastAPI, HTTPException
 from http import HTTPStatus
 from typing import List
-from schema import Receita, CreateReceita
-from .services import validar_regras_negocio_receita, buscar_receita_por_id, buscar_receita_por_nome
+from schema import Receita, CreateReceita, Usuario
+
+# --- Funções de Serviço (Migradas de services.py) ---
+
+def validar_regras_negocio_receita(dados: CreateReceita, receitas: List[Receita], id_atual: int = None):
+    """
+    Valida as regras de negócio para uma receita (criação ou atualização).
+    """
+    # Validação de comprimento do nome
+    if not (2 <= len(dados.nome) <= 50):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail="O nome da receita deve ter entre 2 e 50 caracteres."
+        )
+
+    # Validação de quantidade de ingredientes
+    if not (1 <= len(dados.ingredientes) <= 20):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail="A receita deve ter no mínimo 1 e no máximo 20 ingredientes."
+        )
+
+    # Validação de nome duplicado (conflito)
+    for receita_existente in receitas:
+        # Verifica se é uma receita diferente (para PUT) ou se é uma nova receita (para POST)
+        if receita_existente.nome.lower() == dados.nome.lower() and receita_existente.id != id_atual:
+            raise HTTPException(
+                status_code=HTTPStatus.CONFLICT,
+                detail="Já existe uma receita com este nome."
+            )
+
+def buscar_receita_por_id(id: int, receitas: List[Receita]) -> Receita:
+    """
+    Busca uma receita pelo ID e levanta 404 se não for encontrada.
+    """
+    for receita in receitas:
+        if receita.id == id:
+            return receita
+    raise HTTPException(
+        status_code=HTTPStatus.NOT_FOUND,
+        detail="Receita com o ID especificado não foi encontrada"
+    )
+
+def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Receita:
+    """
+    Busca uma receita pelo nome e levanta 404 se não for encontrada.
+    """
+    for receita in receitas:
+        if receita.nome.lower() == nome_receita.lower():
+            return receita
+    raise HTTPException(
+        status_code=HTTPStatus.NOT_FOUND,
+        detail="Receita não encontrada"
+    )
+
+# --- Configuração da Aplicação ---
 
 app = FastAPI(title='API do Kaué e do Gustavo')
 
 receitas: List[Receita] = []
 contador_id = 1
 
+# Dados de exemplo
 receitas.append(Receita(
     id=1,
     nome="Brownie",
@@ -38,6 +93,8 @@ receitas.append(Receita(
 
 contador_id = 3
 
+# --- Rotas da API ---
+
 @app.post("/receitas", response_model=Receita, status_code=HTTPStatus.CREATED)
 def create_receita(dados: CreateReceita):
     global contador_id
@@ -63,10 +120,12 @@ def get_todas_receitas():
 
 @app.get("/receitas/id/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def get_receita_por_id(id: int):
+    # A função buscar_receita_por_id já levanta HTTPException(404) se não encontrar
     return buscar_receita_por_id(id, receitas)
 
 @app.get("/receitas/{nome_receita}", response_model=Receita, status_code=HTTPStatus.OK)
 def get_receitas_por_nome(nome_receita: str):
+    # A função buscar_receita_por_nome já levanta HTTPException(404) se não encontrar
     return buscar_receita_por_nome(nome_receita, receitas)
 
 @app.put("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
@@ -75,7 +134,8 @@ def update_receita(id: int, dados: CreateReceita):
     validar_regras_negocio_receita(dados, receitas, id_atual=id)
 
     # Garante que a receita existe, senão levanta 404
-    receita_existente = buscar_receita_por_id(id, receitas) 
+    # Usamos a busca para garantir o 404, mas não usamos o retorno
+    buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
         if receitas[i].id == id:
@@ -87,13 +147,14 @@ def update_receita(id: int, dados: CreateReceita):
             )
             receitas[i] = receita_atualizada
             return receita_atualizada
-
-    # Este código é teoricamente inalcançável devido ao buscar_receita_por_id, mas mantido como fallback
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada")
+    
+    # Este código é teoricamente inalcançável, mas mantido para segurança
+    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada (Erro interno inesperado)")
 
 @app.delete("/receitas/{id}", response_model=Receita, status_code=HTTPStatus.OK)
 def deletar_receita(id: int):
     # Garante que a receita existe, senão levanta 404
+    # Usamos a busca para garantir o 404, mas não usamos o retorno
     receita_a_deletar = buscar_receita_por_id(id, receitas) 
 
     for i in range(len(receitas)):
@@ -101,6 +162,5 @@ def deletar_receita(id: int):
             receita_removida = receitas.pop(i)
             return receita_removida
     
-    # Este código é teoricamente inalcançável devido ao buscar_receita_por_id, mas mantido como fallback
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada")
-
+    # Este código é teoricamente inalcançável, mas mantido para segurança
+    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada (Erro interno inesperado)")
