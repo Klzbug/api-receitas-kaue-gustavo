@@ -30,6 +30,18 @@ def create_usuario(dados: BaseUsuario):
 
     return UsuarioPublic(id=novo_usuario.id, nome=novo_usuario.nome)
 
+@app.get("/usuarios", response_model=List[Usuario], status_code=HTTPStatus.OK)
+def get_todas_usuarios():
+    return usuarios
+
+@app.get("/usuarios/id/{id}", response_model=Usuario, status_code=HTTPStatus.OK)
+def get_usuario_por_id(id: int):
+    return buscar_usuario_por_id(id, usuarios)
+
+@app.get("/usuarios/{nome_usuario}", response_model=Usuario, status_code=HTTPStatus.OK)
+def get_usuario_por_nome(nome_usuario: str):
+    return buscar_usuario_por_nome(nome_usuario, usuarios)
+
 
 receitas: List[Receita] = []
 contador_id = 1
