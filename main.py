@@ -3,18 +3,33 @@ from http import HTTPStatus
 from typing import List
 from schema import Receita, CreateReceita, Usuario, BaseUsuario, UsuarioPublic
 
-usuarios: List[Usuario] = []
+app = FastAPI(title='API do Kaué e do Gustavo')
 
+usuarios: List[Usuario] = []
 receitas: List[Receita] = []
+contador_id = 1
+contador_usuario_id = 1
 
 @app.post("/usuarios", status_code=HTTPStatus.CREATED, response_model=UsuarioPublic)
 def create_usuario(dados: BaseUsuario):
+    contador_usuario_id
+
     for usuario_existente in usuarios:
         if usuario_existente.nome.lower() == dados.nome.lower() and usuario_existente.id != id_atual:
             raise HTTPException(
                 status_code=HTTPStatus.CONFLICT,
                 detail="Já existe um usuario com este nome."
             )
+    novo_usuario = Usuario(
+        id=contador_usuario_id,
+        nome=dados.nome,
+        senha=dados.senha
+    )
+    usuarios.append(novo_usuario)
+    contador_usuario_id += 1
+
+    return UsuarioPublic(id=novo_usuario.id, nome=novo_usuario.nome)
+
 
 
 def validar_regras_negocio_receita(dados: CreateReceita, receitas: List[Receita], id_atual: int = None):
