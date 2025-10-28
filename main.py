@@ -31,48 +31,6 @@ def create_usuario(dados: BaseUsuario):
     return UsuarioPublic(id=novo_usuario.id, nome=novo_usuario.nome)
 
 
-
-def validar_regras_negocio_receita(dados: CreateReceita, receitas: List[Receita], id_atual: int = None):
-    if not (2 <= len(dados.nome) <= 50):
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail="O nome da receita deve ter entre 2 e 50 caracteres."
-        )
-
-    if not (1 <= len(dados.ingredientes) <= 20):
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail="A receita deve ter no mínimo 1 e no máximo 20 ingredientes."
-        )
-
-    for receita_existente in receitas:
-        if receita_existente.nome.lower() == dados.nome.lower() and receita_existente.id != id_atual:
-            raise HTTPException(
-                status_code=HTTPStatus.CONFLICT,
-                detail="Já existe uma receita com este nome."
-            )
-
-def buscar_receita_por_id(id: int, receitas: List[Receita]) -> Receita:
-    for receita in receitas:
-        if receita.id == id:
-            return receita
-    raise HTTPException(
-        status_code=HTTPStatus.NOT_FOUND,
-        detail="Receita com o ID especificado não foi encontrada"
-    )
-
-def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Receita:
-    for receita in receitas:
-        if receita.nome.lower() == nome_receita.lower():
-            return receita
-    raise HTTPException(
-        status_code=HTTPStatus.NOT_FOUND,
-        detail="Receita não encontrada"
-    )
-
-
-app = FastAPI(title='API do Kaué e do Gustavo')
-
 receitas: List[Receita] = []
 contador_id = 1
 
@@ -167,3 +125,44 @@ def deletar_receita(id: int):
             return receita_removida
     
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada (Erro interno inesperado)")
+
+
+
+
+def validar_regras_negocio_receita(dados: CreateReceita, receitas: List[Receita], id_atual: int = None):
+    if not (2 <= len(dados.nome) <= 50):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail="O nome da receita deve ter entre 2 e 50 caracteres."
+        )
+
+    if not (1 <= len(dados.ingredientes) <= 20):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail="A receita deve ter no mínimo 1 e no máximo 20 ingredientes."
+        )
+
+    for receita_existente in receitas:
+        if receita_existente.nome.lower() == dados.nome.lower() and receita_existente.id != id_atual:
+            raise HTTPException(
+                status_code=HTTPStatus.CONFLICT,
+                detail="Já existe uma receita com este nome."
+            )
+
+def buscar_receita_por_id(id: int, receitas: List[Receita]) -> Receita:
+    for receita in receitas:
+        if receita.id == id:
+            return receita
+    raise HTTPException(
+        status_code=HTTPStatus.NOT_FOUND,
+        detail="Receita com o ID especificado não foi encontrada"
+    )
+
+def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Receita:
+    for receita in receitas:
+        if receita.nome.lower() == nome_receita.lower():
+            return receita
+    raise HTTPException(
+        status_code=HTTPStatus.NOT_FOUND,
+        detail="Receita não encontrada"
+    )
