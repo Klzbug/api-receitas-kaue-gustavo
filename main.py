@@ -30,17 +30,37 @@ def create_usuario(dados: BaseUsuario):
 
     return UsuarioPublic(id=novo_usuario.id, nome=novo_usuario.nome)
 
-@app.get("/usuarios", response_model=List[Usuario], status_code=HTTPStatus.OK)
+@app.get("/usuarios", response_model=List[UsuarioPublic], status_code=HTTPStatus.OK)
 def get_todas_usuarios():
     return usuarios
 
-@app.get("/usuarios/id/{id}", response_model=Usuario, status_code=HTTPStatus.OK)
+@app.get("/usuarios/id/{id}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
 def get_usuario_por_id(id: int):
     return buscar_usuario_por_id(id, usuarios)
 
-@app.get("/usuarios/{nome_usuario}", response_model=Usuario, status_code=HTTPStatus.OK)
+@app.get("/usuarios/{nome_usuario}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
 def get_usuario_por_nome(nome_usuario: str):
     return buscar_usuario_por_nome(nome_usuario, usuarios)
+
+@app.put("/usarios/{id}", response_model=Receita, status_code=HTTPStatus.OK)
+def update_receita(id: int, dados: BaseUsuario):
+    validar_regras_negocio_usuario(dados, usarios, id_atual=id)
+
+  
+    buscar_usuario_por_id(id, usarios) 
+
+    for i in range(len(usarios)):
+        if usarios[i].id == id:
+            usuario_atualizado = Usuario(
+                id=id,
+                nome=dados.nome,
+                ingredientes=dados.ingredientes,
+                modo_de_preparo=dados.modo_de_preparo,
+            )
+            usarios[i] = receita_atualizada
+            return receita_atualizada
+    
+    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada (Erro interno inesperado)")
 
 
 receitas: List[Receita] = []
