@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from http import HTTPStatus
 from typing import List
-from schema import Receita, CreateReceita, Usuario, BaseUsuario, UsuarioPublic
+from schema import Receita, CreateReceita
 
 app = FastAPI(title='API do Kaué e do Gustavo')
 
@@ -237,3 +237,7 @@ def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Recei
         status_code=HTTPStatus.NOT_FOUND,
         detail="Receita não encontrada"
     )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
