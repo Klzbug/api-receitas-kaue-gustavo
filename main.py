@@ -21,7 +21,7 @@ receitas.append(Receita(
         "1 xícara de farinha de trigo",
         "1 pitada de sal"
     ],
-    modo_de_preparo="Misture todos os ingredientes e coloqeu no forno."
+    modo_de_preparo="Misture todos os ingredientes e coloque no forno."
 ))
 
 receitas.append(Receita(
@@ -237,7 +237,3 @@ def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Recei
         status_code=HTTPStatus.NOT_FOUND,
         detail="Receita não encontrada"
     )
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
