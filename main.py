@@ -237,7 +237,3 @@ def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Recei
         status_code=HTTPStatus.NOT_FOUND,
         detail="Receita não encontrada"
     )
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
