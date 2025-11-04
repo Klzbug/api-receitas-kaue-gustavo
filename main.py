@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from http import HTTPStatus
 from typing import List
-from schema import Receita, CreateReceita
+from schema import Receita, CreateReceita, Usuario, BaseUsuario, UsuarioPublic
 
 app = FastAPI(title='API do Kaué e do Gustavo')
 
