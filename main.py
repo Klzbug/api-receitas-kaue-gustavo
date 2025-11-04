@@ -1,67 +1,9 @@
 from fastapi import FastAPI, HTTPException
 from http import HTTPStatus
 from typing import List
-from schema import Receita, CreateReceita, Usuario, BaseUsuario, UsuarioPublic
+from schema import Receita, CreateReceita
 
 app = FastAPI(title='API do Kaué e do Gustavo')
-
-usuarios: List[Usuario] = []
-receitas: List[Receita] = []
-contador_id = 1
-contador_usuario_id = 1
-
-@app.post("/usuarios", status_code=HTTPStatus.CREATED, response_model=UsuarioPublic)
-def create_usuario(dados: BaseUsuario):
-    contador_usuario_id
-
-    for usuario_existente in usuarios:
-        if usuario_existente.nome.lower() == dados.nome.lower() and usuario_existente.id != id_atual:
-            raise HTTPException(
-                status_code=HTTPStatus.CONFLICT,
-                detail="Já existe um usuario com este nome."
-            )
-    novo_usuario = Usuario(
-        id=contador_usuario_id,
-        nome=dados.nome,
-        senha=dados.senha
-    )
-    usuarios.append(novo_usuario)
-    contador_usuario_id += 1
-
-    return UsuarioPublic(id=novo_usuario.id, nome=novo_usuario.nome)
-
-@app.get("/usuarios", response_model=List[UsuarioPublic], status_code=HTTPStatus.OK)
-def get_todas_usuarios():
-    return usuarios
-
-@app.get("/usuarios/id/{id}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
-def get_usuario_por_id(id: int):
-    return buscar_usuario_por_id(id, usuarios)
-
-@app.get("/usuarios/{nome_usuario}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
-def get_usuario_por_nome(nome_usuario: str):
-    return buscar_usuario_por_nome(nome_usuario, usuarios)
-
-@app.put("/usarios/{id}", response_model=Receita, status_code=HTTPStatus.OK)
-def update_receita(id: int, dados: BaseUsuario):
-    validar_regras_negocio_usuario(dados, usarios, id_atual=id)
-
-  
-    buscar_usuario_por_id(id, usarios) 
-
-    for i in range(len(usarios)):
-        if usarios[i].id == id:
-            usuario_atualizado = Usuario(
-                id=id,
-                nome=dados.nome,
-                ingredientes=dados.ingredientes,
-                modo_de_preparo=dados.modo_de_preparo,
-            )
-            usarios[i] = receita_atualizada
-            return receita_atualizada
-    
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada (Erro interno inesperado)")
-
 
 receitas: List[Receita] = []
 contador_id = 1
@@ -198,3 +140,7 @@ def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Recei
         status_code=HTTPStatus.NOT_FOUND,
         detail="Receita não encontrada"
     )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
