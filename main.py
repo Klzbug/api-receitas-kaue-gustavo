@@ -187,18 +187,26 @@ def deletar_receita(id: int):
     
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Receita não encontrada (Erro interno inesperado)")
 
+# ==============================================
+# FUNÇÕES AUXILIARES (REGRAS DE NEGÓCIO E BUSCA)
+# ==============================================
+# Nesta seção estão as funções responsáveis por:
+# - Validar regras de negócio de usuários e receitas;
+# - Buscar usuários e receitas por ID ou nome;
+# - Garantir integridade e consistência dos dados.
+# ==============================================
 
-
+# -------------------------------
+#            USUÁRIOS
+# -------------------------------
 
 def validar_regras_negocio_usuario(dados: BaseUsuario, usuarios: List[Usuario], id_atual: int = None):
-    # Regra 1: Email único
     for usuario_existente in usuarios:
         if usuario_existente.email.lower() == dados.email.lower() and usuario_existente.id != id_atual:
             raise HTTPException(
                 status_code=HTTPStatus.CONFLICT,
                 detail="Já existe um usuário com este email."
             )
-    # Regra 2: Senha deve conter letras e números (Desafio Extra)
     if not any(char.isdigit() for char in dados.senha) or not any(char.isalpha() for char in dados.senha):
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -222,6 +230,10 @@ def buscar_usuario_por_nome(nome_usuario: str, usuarios: List[Usuario]) -> Usuar
         status_code=HTTPStatus.NOT_FOUND,
         detail="Usuário não encontrado"
     )
+
+# -------------------------------
+#          RECEITAS
+# -------------------------------
 
 def validar_regras_negocio_receita(dados: CreateReceita, receitas: List[Receita], id_atual: int = None):
     if not (2 <= len(dados.nome) <= 50):
