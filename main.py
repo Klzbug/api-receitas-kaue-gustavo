@@ -48,6 +48,13 @@ receitas.append(Receita(
 
 contador_id = 3
 
+# ==============================================
+#             ROTAS - USUÁRIOS
+# ==============================================
+# Nesta seção estão todas as rotas responsáveis
+# por criar, listar, buscar, atualizar e deletar
+# usuários da aplicação.
+# ==============================================
 
 @app.post("/usuarios", status_code=HTTPStatus.CREATED, response_model=UsuarioPublic)
 def create_usuario(dados: BaseUsuario):
@@ -110,6 +117,13 @@ def deletar_usuario(id: int):
 
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado (Erro interno inesperado)")
 
+# ==============================================
+#            ROTAS - RECEITAS
+# ==============================================
+# Nesta seção estão todas as rotas responsáveis
+# por criar, listar, buscar, atualizar e deletar
+# receitas da aplicação.
+# ==============================================
 
 @app.post("/receitas", response_model=Receita, status_code=HTTPStatus.CREATED)
 def create_receita(dados: CreateReceita):
