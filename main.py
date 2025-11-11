@@ -267,7 +267,7 @@ def buscar_receita_por_id(id: int, receitas: List[Receita]) -> Receita:
 def buscar_receita_por_nome(nome_receita: str, receitas: List[Receita]) -> Receita:
     for receita in receitas:
         if receita.nome.lower() == nome_receita.lower():
-            return Receita
+            return receita
     raise HTTPException(
         status_code=HTTPStatus.NOT_FOUND,
         detail="Receita com o nome especifico não foi encontrado"
