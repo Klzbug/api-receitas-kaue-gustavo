@@ -3,12 +3,21 @@ from http import HTTPStatus
 from typing import List
 from schema import Receita, CreateReceita, Usuario, BaseUsuario, UsuarioPublic
 
+# ============================
+# DADOS INICIAIS DA APLICAÇÃO
+# ============================
+
 app = FastAPI(title='API do Kaué e do Gustavo')
 
+# Listas para armazenar usuários e receitas em memória
 usuarios: List[Usuario] = []
 contador_usuario_id = 1
 receitas: List[Receita] = []
 contador_id = 1
+
+# ============================
+#      RECEITAS PADRÃO
+# ============================
 
 receitas.append(Receita(
     id=1,
