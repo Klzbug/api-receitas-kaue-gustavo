@@ -9,9 +9,11 @@ class User:
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    username: Mapped[str] = mapped_column(unique=True)
-    password: Mapped[str]
+    nome_usuario: Mapped[str] = mapped_column(unique=True)
+    senha: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
     created_at: Mapped[datetime] = mapped_column(
-        init=False, server_default=func.now()
-        )
+        datetime,
+        init = False, 
+        default=func.now(),
+        onupdate=func.now())
