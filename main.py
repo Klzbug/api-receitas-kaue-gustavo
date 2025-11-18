@@ -1,7 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from datetime import datetime
+from fastapi import FastAPI, HTTPException, Depends
 from http import HTTPStatus
 from typing import List
 from schema import Receita, CreateReceita, Usuario, BaseUsuario, UsuarioPublic
+from config import settings
+from models import User
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from database import get_session
 
 # ============================
 # DADOS INICIAIS DA APLICAÇÃO
@@ -57,7 +63,36 @@ contador_id = 3
 # ==============================================
 
 @app.post("/usuarios", status_code=HTTPStatus.CREATED, response_model=UsuarioPublic)
-def create_usuario(dados: BaseUsuario):
+def create_usuario(dados: BaseUsuario, session: Session = Depends(get_session)):
+    db_user = session.scalar(
+        select(User).where(
+            (User.nome_usuario == dados.nome_usuario) | (User.email == dados.email)
+        )
+    )
+
+    if db_user:
+        if db_user.nome_usuario == dados.nome_usuario:
+            raise HTTPException(
+                status_code=HTTPStatus.CONFLICT,
+                detail ='Email já existe',
+            )
+        elif db_user.email == dados.email:
+            raise HTTPException(
+                status_code=HTTPStatus.CONFLICT,
+                detail='Email já existe',
+            )
+        
+    db_user = User(
+            nome_usuario=dados.nome_usuario, senha=dados.senha, email=dados.email
+        )
+    
+    session.add(db_user)
+    session.commit()
+    session.refresh(db_user)
+
+    return db_user
+
+
     global contador_usuario_id
 
     validar_regras_negocio_usuario(dados, usuarios)
@@ -74,13 +109,22 @@ def create_usuario(dados: BaseUsuario):
     return UsuarioPublic(id=novo_usuario.id, nome_usuario=novo_usuario.nome_usuario, email=novo_usuario.email)
 
 @app.get("/usuarios", response_model=List[UsuarioPublic], status_code=HTTPStatus.OK)
-def get_todos_usuarios():
-    return [UsuarioPublic(id=u.id, nome_usuario=u.nome_usuario, email=u.email) for u in usuarios]
+def get_todos_usuarios(
+    skip: int = 0, limit: int = 100, session: Session = Depends(get_session)
+):
+    users = session.scalars(select(User).offset(skip).limit(limit)).all()
+
+    return users
 
 @app.get("/usuarios/id/{id}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
-def get_usuario_por_id(id: int):
-    usuario = buscar_usuario_por_id(id, usuarios)
-    return UsuarioPublic(id=usuario.id, nome_usuario=usuario.nome_usuario, email=usuario.email)
+def get_usuario_por_id(id: int,  session: Session = Depends(get_session)):
+    db_user = session.sacalar(
+        select(User).where((User.id == id))
+    )
+    if db_user:
+        return db_user
+    
+    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado")
 
 @app.get("/usuarios/{nome_usuario}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
 def get_usuario_por_nome(nome_usuario: str):
@@ -88,36 +132,45 @@ def get_usuario_por_nome(nome_usuario: str):
     return UsuarioPublic(id=usuario.id, nome_usuario=usuario.nome_usuario, email=usuario.email)
 
 @app.put("/usuarios/{id}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
-def update_usuario(id: int, dados: BaseUsuario):
-    validar_regras_negocio_usuario(dados, usuarios, id_atual=id)
+def update_usuario(id: int, dados: BaseUsuario, session: Session = Depends(get_session)):
+    
+    db_user = session.scalar(select(User).where(User.id == id))
+    if not db_user:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='Usuário não encontrado'
+        )
+    try:
+        db_user.nome_usuario = dados.nome_usuario
+        db_user.senha = dados.senha
+        db_user.email = dados.email
+        session.commit()
+        session.refresh(db_user)
 
-    buscar_usuario_por_id(id, usuarios)
+        return db_user
+    
+    except IntegrityError:
+        raise HTTPException(
+            status_code=HTTPStatus.CONFLICT,
+            detail='Nome de usuário ou Email já existe'
+        )
 
-    for i in range(len(usuarios)):
-        if usuarios[i].id == id:
-            usuario_atualizado = Usuario(
-                id=id,
-                nome_usuario=dados.nome_usuario,
-                email=dados.email,
-                senha=dados.senha,
-            )
-            usuarios[i] = usuario_atualizado
-            return UsuarioPublic(id=usuario_atualizado.id, nome_usuario=usuario_atualizado.nome_usuario, email=usuario_atualizado.email)
 
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado (Erro interno inesperado)")
 
 @app.delete("/usuarios/{id}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
-def deletar_usuario(id: int):
-    buscar_usuario_por_id(id, usuarios)
+def deletar_usuario(id: int, session: Session = Depends(get_session)):
+    db_user = session.scalar(select(User).where(User.id == id))
 
-    for i in range(len(usuarios)):
-        if usuarios[i].id == id:
-            usuario_removido = usuarios.pop(i)
-            return UsuarioPublic(id=usuario_removido.id, nome_usuario=usuario_removido.nome_usuario, email=usuario_removido.email)
+    if not db_user:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='Usuário não encontrado'
+        )
+    session.delete(db_user)
+    session.commit()
 
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado (Erro interno inesperado)")
+    return db_user
 
-# ==============================================
+
+
 #            ROTAS - RECEITAS
 # ==============================================
 # Nesta seção estão todas as rotas responsáveis
