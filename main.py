@@ -16,7 +16,6 @@ from database import get_session
 app = FastAPI(title='API do Kaué e do Gustavo')
 
 # Listas para armazenar usuários e receitas em memória
-usuarios: List[Usuario] = []
 contador_usuario_id = 1
 receitas: List[Receita] = []
 contador_id = 1
@@ -127,9 +126,14 @@ def get_usuario_por_id(id: int,  session: Session = Depends(get_session)):
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado")
 
 @app.get("/usuarios/{nome_usuario}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
-def get_usuario_por_nome(nome_usuario: str):
-    usuario = buscar_usuario_por_nome(nome_usuario, usuarios)
-    return UsuarioPublic(id=usuario.id, nome_usuario=usuario.nome_usuario, email=usuario.email)
+def get_usuario_por_nome(nome_usuario: str, session: Session = Depends(get_session)):
+    db_user = session.scalar(
+        select(User).where((User.nome_usuario == nome_usuario))
+    )
+    if db_user:
+        return db_user
+
+    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado")
 
 @app.put("/usuarios/{id}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
 def update_usuario(id: int, dados: BaseUsuario, session: Session = Depends(get_session)):
