@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import func, DateTime
 from sqlalchemy.orm import Mapped, mapped_as_dataclass, mapped_column,  registry
 
 table_registry = registry()
@@ -13,7 +13,7 @@ class User:
     senha: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
     created_at: Mapped[datetime] = mapped_column(
-        datetime,
+        DateTime(timezone = True),
         init = False, 
         default=func.now(),
         onupdate=func.now())

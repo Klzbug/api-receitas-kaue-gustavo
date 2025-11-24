@@ -117,7 +117,7 @@ def get_todos_usuarios(
 
 @app.get("/usuarios/id/{id}", response_model=UsuarioPublic, status_code=HTTPStatus.OK)
 def get_usuario_por_id(id: int,  session: Session = Depends(get_session)):
-    db_user = session.sacalar(
+    db_user = session.scalar(
         select(User).where((User.id == id))
     )
     if db_user:
